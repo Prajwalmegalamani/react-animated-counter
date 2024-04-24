@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useCallback, useRef, useState } from "react";
+import React, { memo, useEffect, useCallback, useRef, useState, CSSProperties } from "react";
 import { motion } from "framer-motion";
 import { formatForDisplay } from "./util";
 import { usePrevious } from "./hooks";
@@ -14,6 +14,7 @@ export interface AnimatedCounterProps {
   includeDecimals?: boolean;
   decimalPrecision?: number;
   includeCommas?: boolean;
+  digitStyles?: CSSProperties;
 }
 
 export interface NumberColumnProps {
@@ -23,22 +24,25 @@ export interface NumberColumnProps {
   color: string;
   incrementColor: string;
   decrementColor: string;
+  digitStyles: CSSProperties;
 }
 
 export interface DecimalColumnProps {
   fontSize: string;
   color: string;
   isComma: boolean;
+  digitStyles: CSSProperties;
 }
 
 // Decimal element component
-const DecimalColumn = ({ fontSize, color, isComma }: DecimalColumnProps) => (
+const DecimalColumn = ({ fontSize, color, isComma, digitStyles }: DecimalColumnProps) => (
   <span
     style={{
       fontSize: fontSize,
       lineHeight: fontSize,
       color: color,
       marginLeft: `calc(-${fontSize} / 10)`,
+      ...digitStyles,
     }}>
       {isComma ? ',' : '.'}
     </span>
@@ -52,6 +56,7 @@ const NumberColumn = memo(({
   color,
   incrementColor,
   decrementColor,
+  digitStyles,
 }: NumberColumnProps) => {
 
   const [position, setPosition] = useState<number>(0);
@@ -90,6 +95,7 @@ const NumberColumn = memo(({
           fontSize: fontSize,
           lineHeight: fontSize,
           marginRight: `calc(${fontSize} / 5)`,
+          ...digitStyles
         }}
       >
         {digit}
@@ -108,6 +114,7 @@ const NumberColumn = memo(({
         color: color,
         '--increment-color': `${incrementColor}`,
         '--decrement-color': `${decrementColor}`,
+        ...digitStyles,
       } as React.CSSProperties}
     >
       <motion.div
@@ -120,6 +127,7 @@ const NumberColumn = memo(({
             <span style={{ 
               fontSize: fontSize,
               lineHeight: fontSize,
+              ...digitStyles,
             }}>
               {num}
             </span>
@@ -141,6 +149,7 @@ const AnimatedCounter = ({
   includeDecimals = true,
   decimalPrecision = 2,
   includeCommas = false,
+  digitStyles = {}, 
 }: AnimatedCounterProps) => {
 
   const numArray = formatForDisplay(Math.abs(value), includeDecimals, decimalPrecision, includeCommas);
@@ -167,6 +176,7 @@ const AnimatedCounter = ({
             fontSize={fontSize}
             color={color}
             isComma={number === ","}
+            digitStyles={digitStyles}
           />
         ) : (
           <NumberColumn
@@ -177,6 +187,7 @@ const AnimatedCounter = ({
             fontSize={fontSize}
             incrementColor={incrementColor}
             decrementColor={decrementColor}
+            digitStyles={digitStyles}
           />
         )
       )}
@@ -190,6 +201,7 @@ const AnimatedCounter = ({
           fontSize={fontSize}
           incrementColor={incrementColor}
           decrementColor={decrementColor}
+          digitStyles={digitStyles}
         />
       }
     </motion.div>
